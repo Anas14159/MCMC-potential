@@ -1,10 +1,13 @@
 import numpy as np
-from scipy.constants import epsilon_0, elementary_charge, pi, Boltzmann
 import plotly.graph_objs as go
-from matplotlib import pyplot as plt
 import time
 import os
 import itertools
+
+epsilon_0 = 8.8541878128e-12
+elementary_charge = 1.602176634e-19
+pi = 3.141592653589793
+Boltzmann = 1.380649e-23
 
 
 print("Molecule? BeH2,   CO2,   H2O,   BF3,   NH3,   ClF3 (CASE SENSITIVE)")
@@ -92,21 +95,6 @@ start = time.time()
 
 Temp = Initial_Temp
 
-def variablegraph(Temps, p_accepts):
-
-    m, b = np.polyfit(Temps, p_accepts, 1)
-    x = np.array(Temps)
-    y_fit = m * x + b
-
-    plt.figure()
-    plt.scatter(Temps, p_accepts, color='red')
-    plt.plot(Temps, y_fit, color='blue')
-    plt.title('p_accept with poltfit')
-    plt.xlabel('Temp')
-    plt.ylabel('p_accept')
-
-    plt.show()
-
 
 def graph(positions, energy_list,
           title="3D Distribution by Charge",
@@ -175,8 +163,6 @@ def graph(positions, energy_list,
 
     fig.write_html(path, auto_open=False)
 
-import itertools
-import numpy as np
 
 def compute_all_bond_angles(positions, num_nuclei, idx):
     """
@@ -330,7 +316,7 @@ def main():
 
     best_distr = initial_distr.copy()
     global ang
-    ang = np.array([])
+    ang = []
     Particle_iterations = 0
 
     boo = False
@@ -340,7 +326,7 @@ def main():
         Row = random_particle()
         moves_since_change = 0
 
-        ang = np.append(ang, angle_between(
+        ang.append(angle_between(
             best_distr[2]-best_distr[0], best_distr[1]-best_distr[0]) / pi * 180)
 
         if Particle_iterations % num_particles == 0 and Particle_iterations != 0:
@@ -384,6 +370,8 @@ def main():
         best_potential = get_potential(best_distr)
         Particle_iterations += 1
 
+    ang = np.array(ang)
+    
     print(f"Final angle: {ang[-1]}")
 
     return (ang[-1], best_potential, best_distr)
@@ -432,4 +420,6 @@ graph(
 )
 
 print ('{0:.2f} seconds elapsed.'.format(time.time()-start))
-print ('Results are on your desktop. Look for a folder called "Graphs"')
+print (f'Results are saved to "C:/Users/{os.getlogin()}/Desktop/Graphs" ')
+
+input("Press Enter to exit...")
